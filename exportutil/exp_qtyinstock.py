@@ -1,0 +1,3 @@
+import oratechexport
+import dbconfig
+oratechexport.exportqtyinstock(p_frequency=dbconfig.QTYINSTOCK_FREQUENCY)

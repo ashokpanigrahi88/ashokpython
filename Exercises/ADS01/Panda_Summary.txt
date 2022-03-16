@@ -1,0 +1,98 @@
+data = {
+    'apples': [3, 2, 0, 1], 
+    'oranges': [0, 3, 7, 2]
+}
+purchases = pd.DataFrame(data)
+purchases
+purchases = pd.DataFrame(data, index=['June', 'Robert', 'Lily', 'David'])
+purchases
+purchases.loc['June']
+df = pd.read_csv('purchases.csv')
+df = pd.read_csv('purchases.csv', index_col=0)
+df = pd.read_json('purchases.json')
+pip install pysqlite3
+import sqlite3
+con = sqlite3.connect("database.db")
+df = pd.read_sql_query("SELECT * FROM purchases", con)
+df = df.set_index('index')
+df.to_csv('new_purchases.csv')
+df.to_json('new_purchases.json')
+df.to_sql('new_purchases', con)
+movies_df = pd.read_csv("IMDB-Movie-Data.csv", index_col="Title")
+.info() should be one of the very first commands you run after loading your data:
+movies_df.info()
+movies_df.shape
+temp_df = movies_df.append(movies_df)
+temp_df = temp_df.drop_duplicates()
+temp_df.shape
+temp_df.drop_duplicates(inplace=True)
+temp_df = movies_df.append(movies_df)  # make a new copy
+temp_df.drop_duplicates(inplace=True, keep=False)
+temp_df.shape
+movies_df.columns
+movies_df.rename(columns={
+        'Runtime (Minutes)': 'Runtime', 
+        'Revenue (Millions)': 'Revenue_millions'
+    }, inplace=True)
+movies_df.columns = ['rank', 'genre', 'description', 'director', 'actors', 'year', 'runtime', 
+                     'rating', 'votes', 'revenue_millions', 'metascore']
+movies_df.columns = [col.lower() for col in movies_df]
+movies_df.columns
+movies_df.isnull()
+movies_df.isnull().sum()
+#Remove nulls is pretty simple:
+movies_df.dropna()
+movies_df.dropna(axis=1)
+revenue = movies_df['revenue_millions']
+revenue_mean = revenue.mean()
+revenue_mean
+movies_df.isnull().sum()
+movies_df.describe()
+movies_df['genre'].describe()
+.value_counts() can tell us the frequency of all values in a column:
+movies_df['genre'].value_counts().head(10)
+#Relationships between continuous variables
+#By using the correlation method .corr() we can generate the relationship between each continuous variable:
+movies_df.corr()
+genre_col = movies_df[['genre']]
+subset = movies_df[['genre', 'rating']]
+movie_subset = movies_df.loc['Prometheus':'Sing']
+condition = (movies_df['director'] == "Ridley Scott")
+movies_df[movies_df['rating'] >= 8.6].head(3)
+movies_df[(movies_df['director'] == 'Christopher Nolan') | (movies_df['director'] == 'Ridley Scott')].head()
+#Using the isin() method we could make this more concise though:
+movies_df[movies_df['director'].isin(['Christopher Nolan', 'Ridley Scott'])].head()
+movies_df[
+    ((movies_df['year'] >= 2005) & (movies_df['year'] <= 2010))
+    & (movies_df['rating'] > 8.0)
+    & (movies_df['revenue_millions'] < movies_df['revenue_millions'].quantile(0.25))
+]
+------ Apply a function
+An efficient alternative is to apply() a function to the dataset. For example, we could use a function to convert movies with an 8.0 or greater to a string value of "good" and the rest to "bad" and use this transformed values to create a new column.
+First we would create a function that, when given a rating, determines if it's good or bad:
+def rating_function(x):
+    if x >= 8.0:
+        return "good"
+    else:
+        return "bad"
+movies_df["rating_category"] = movies_df["rating"].apply(rating_function)
+movies_df["rating_category"] = movies_df["rating"].apply(lambda x: 'good' if x >= 8.0 else 'bad')
+--
+Overall, using apply() will be much faster than iterating manually over rows because pandas is utilizing vectorization.
+Vectorization: a style of computer programming where operations are applied to whole arrays instead of individual elements 
+-----
+-----
+Brief Plotting
+Another great thing about pandas is that it integrates with Matplotlib, so you get the ability to plot directly off DataFrames and Series. To get started we need to import Matplotlib (pip install matplotlib):
+-------
+import matplotlib.pyplot as plt
+plt.rcParams.update({'font.size': 20, 'figure.figsize': (10, 8)}) # set font and plot size to be larger
+Plotting Tip
+
+For categorical variables utilize Bar Charts* and Boxplots.
+For continuous variables utilize Histograms, Scatterplots, Line graphs, and Boxplots.
+------
+movies_df.plot(kind='scatter', x='rating', y='revenue_millions', title='Revenue (millions) vs Rating');
+movies_df['rating'].plot(kind='hist', title='Rating');
+movies_df['rating'].plot(kind="box");
+movies_df.boxplot(column='revenue_millions', by='rating_category');
