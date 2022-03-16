@@ -1,0 +1,5 @@
+set ENV_DB_SID=oratech
+set ENV_DB_HOST=localhost
+set ENV_DB_USER=ORATECHUAT
+set ENV_DB_PWD=ORATECHUAT
+set ENV_DB_PORT=1521
